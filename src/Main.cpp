@@ -1,4 +1,6 @@
-#include "TestGame.h"
+
+#include <iostream>
+
 #include "SDL_net.h"
 
 //#include <stdio.h>
@@ -7,6 +9,8 @@
 #include <string.h>
 #include "SDL.h"
 //#include "SDL_net.h"
+
+using namespace std;
 
 // '0' -> 0, '1' -> 1
 int charToInt(char c) {
@@ -23,11 +27,34 @@ static int run(void* ptr)
     int received;
     do {
         received = SDLNet_TCP_Recv(socket, message, 1024);
-        int y = charToInt(message[0]) * 100 + charToInt(message[1]) * 10 + charToInt(message[2]);
+        message[received] = '\0';
 
-        YY = y;
 
-        std::cout << "Got: " << y << std::endl;
+        //int y = charToInt(message[0]) * 100 + charToInt(message[1]) * 10 + charToInt(message[2]);
+
+        //YY = y;
+
+        string str2(message);
+
+        std::cout << "Recv: " << received << " GOT: " << str2 << "!" << std::endl;
+        std::cout << "Size: " << str2.length() << std::endl;
+
+        char* pch;
+
+        printf("Splitting string \"%s\" into tokens:\n", message);
+
+        pch = strtok(message, ",");
+        while (pch != NULL)
+        {
+            printf("%s\n", pch);
+            pch = strtok(NULL, ",");
+        }
+
+        //if (str == "exit") {
+        //    break;
+        //}
+
+        //std::cout << "Got: " << y << std::endl;
     } while (received > 0);
 
     return 0;
@@ -114,10 +141,12 @@ int main(int argc, char** argv)
 
     SDL_Window * window = SDL_CreateWindow("Multiplayer Pong Client",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+        800, 600, SDL_WINDOW_SHOWN);
 
-    if (nullptr == window)
-        throw EngineException("Failed to create window", SDL_GetError());
+    if (nullptr == window) {
+        std::cout << "Failed to create window" << SDL_GetError() << std::endl;
+        return -1;
+    }
 
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
