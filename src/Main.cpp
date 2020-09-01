@@ -1,27 +1,15 @@
-#include <iostream>
-#include <vector>
-#include <string>
-
-#include "SDL.h"
 #include "SDL_net.h"
 
+#include "MyGame.h"
+
 using namespace std;
-
-struct GameData {
-    int player1Y = 0;
-    int player2Y = 0;
-    int ballX = 0;
-    int ballY = 0;
-} game_data;
-
-struct {
-    vector<string> messages;
-} client_data;
 
 const char* IP_NAME = "localhost";
 const Uint16 PORT = 55555;
 
 bool is_running = true;
+
+MyGame* game = new MyGame();
 
 static int on_receive(void* socket_ptr) {
     TCPsocket socket = (TCPsocket)socket_ptr;
@@ -31,6 +19,7 @@ static int on_receive(void* socket_ptr) {
     char message[message_length];
     int received;
 
+    // TODO: while(), rather than do
     do {
         received = SDLNet_TCP_Recv(socket, message, message_length);
         message[received] = '\0';
@@ -51,15 +40,7 @@ static int on_receive(void* socket_ptr) {
             }
         }
 
-        if (cmd == "GAME_DATA") {
-            // we should have exactly 4 arguments
-            if (args.size() == 4) {
-                game_data.player1Y = stoi(args.at(0));
-                game_data.player2Y = stoi(args.at(1));
-                game_data.ballX = stoi(args.at(2));
-                game_data.ballY = stoi(args.at(3));
-            }
-        }
+        game->on_receive(cmd, args);
 
         if (cmd == "exit") {
             break;
@@ -74,14 +55,16 @@ static int on_send(void* socket_ptr) {
     TCPsocket socket = (TCPsocket)socket_ptr;
 
     while (is_running) {
-        if (client_data.messages.size() > 0) {
+        if (game->messages.size() > 0) {
             string message = "CLIENT_DATA";
 
-            for (auto m : client_data.messages) {
+            for (auto m : game->messages) {
                 message += "," + m;
             }
 
-            client_data.messages.clear();
+            game->messages.clear();
+
+            cout << "Sending_TCP: " << message << endl;
 
             SDLNet_TCP_Send(socket, message.c_str(), message.length());
         }
@@ -93,18 +76,15 @@ static int on_send(void* socket_ptr) {
 }
 
 void loop(SDL_Renderer* renderer) {
-    SDL_Rect player1 = { 0, 0, 20, 60 };
     SDL_Event event;
 
     while (is_running) {
         // input
         while (SDL_PollEvent(&event)) {
             if ((event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) && event.key.repeat == 0) {
-                switch (event.key.keysym.sym) {
-                    case SDLK_w:
-                        client_data.messages.push_back(event.type == SDL_KEYDOWN ? "W_DOWN" : "W_UP");
-                        break;
+                game->input(event);
 
+                switch (event.key.keysym.sym) {
                     case SDLK_ESCAPE:
                         is_running = false;
                         break;
@@ -122,12 +102,9 @@ void loop(SDL_Renderer* renderer) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // update
-        player1.y = game_data.player1Y;
+        game->update();
 
-        // render
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderDrawRect(renderer, &player1);
+        game->render(renderer);
 
         SDL_RenderPresent(renderer);
 
@@ -150,7 +127,10 @@ int run_game() {
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    // TODO: check renderer
+    if (nullptr == renderer) {
+        std::cout << "Failed to create renderer" << SDL_GetError() << std::endl;
+        return -1;
+    }
 
     loop(renderer);
 
@@ -191,6 +171,8 @@ int main(int argc, char** argv) {
     SDL_CreateThread(on_send, "ConnectionSendThread", (void*)socket);
 
     run_game();
+
+    delete game;
 
     // Close connection to the server
     SDLNet_TCP_Close(socket);
