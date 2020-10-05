@@ -32,6 +32,5 @@ After this, a ".sln" will be generated in `build/`.
 2. Right click on MyGame in project explorer and select as startup project.
 3. Right click on MyGame again and select Properties.
 4. In the properties window, Linker -> System and change SubSystem to Console.
-5. Copy the `res/` directory to the `build` directory.
 
 Before running the demo, ensure that the [CI628-server application](https://github.com/AlmasB/CI628-PongServer) is running. You can now run the demo from Visual Studio via Local Windows Debugger.
