@@ -10,7 +10,7 @@ To build, you will need:
 * [CMake](https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4-win64-x64.zip) 3.16+
 * Visual Studio 2019
 
-1. Download this repository by clicking "Clone or download" -> Download zip.
+1. Download this repository by clicking "Code" -> Download zip.
 2. Extract the zip file and rename `CI628-PongClient-master` to `CI628`.
 
 Open the command line (via Git Bash):
@@ -33,4 +33,4 @@ After this, a ".sln" will be generated in `build/`.
 3. Right click on MyGame again and select Properties.
 4. In the properties window, Linker -> System and change SubSystem to Console.
 
-Before running the demo, ensure that the [CI628-server application](https://github.com/AlmasB/CI628-PongServer) is running. You can now run the demo from Visual Studio via Local Windows Debugger.
+Before running the demo, ensure that the [CI628-server application](https://github.com/AlmasB/CI628-PongServer/releases) is running. You can now run the demo from Visual Studio via Local Windows Debugger.
