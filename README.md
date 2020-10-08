@@ -7,7 +7,7 @@ The project is configured to be developed on Windows, so it only includes Window
 
 To build, you will need:
 
-* [CMake](https://cmake.org/) 3.6+
+* [CMake](https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4-win64-x64.zip) 3.16+
 * Visual Studio 2019
 
 1. Download this repository by clicking "Clone or download" -> Download zip.
