@@ -21,6 +21,7 @@ mkdir build
 cd build
 
 // Note: if running on Uni machines, it's /c/Program\ Files/CMake/bin/cmake rather than just cmake
+// OR see further below how to make cmake visible globally
 
 cmake .. -G "Visual Studio 16 2019"
 
@@ -34,3 +35,20 @@ After this, a ".sln" will be generated in `build/`.
 4. In the properties window, Linker -> System and change SubSystem to Console.
 
 Before running the demo, ensure that the [CI628-server application](https://github.com/AlmasB/CI628-PongServer/releases) is running. You can now run the demo from Visual Studio via Local Windows Debugger.
+
+#### Globally accessible cmake
+
+1. Close git bash if open.
+2. Go to `C:\Users\your_user_name` and open (or create) a file with **exact** name `.bash_profile`.
+3. Add to file:
+
+```
+export CMAKE_HOME=/c/Users/... <-- path to cmake directory (i.e. where you downloaded/extracted cmake to)
+export PATH=$PATH:$CMAKE_HOME/bin
+```
+
+4. Open git bash and check cmake works by typing:
+
+```
+cmake --version
+```
