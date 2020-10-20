@@ -21,6 +21,7 @@ mkdir build
 cd build
 
 // Note: if running on Uni machines, it's /c/Program\ Files/CMake/bin/cmake rather than just cmake
+// Note: if running on Uni machines from Command Prompt, it's "C:\Program Files\CMake\bin\cmake.exe" rather than just cmake
 // OR see further below how to make cmake visible globally
 
 cmake .. -G "Visual Studio 16 2019"
